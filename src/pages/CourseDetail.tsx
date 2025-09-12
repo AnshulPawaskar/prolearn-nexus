@@ -287,10 +287,10 @@ const CourseDetail = () => {
               <Card className="sticky top-8">
                 <CardContent className="p-6">
                   {!course.isEnrolled ? (
-                    <div className="space-y-4">
-                      <div className="text-center">
-                        <span className="text-3xl font-bold text-primary">${course.price}</span>
-                      </div>
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <span className="text-3xl font-bold text-primary">Free</span>
+                        </div>
                       <Button className="w-full bg-gradient-primary hover:opacity-90" size="lg">
                         Enroll Now
                       </Button>

@@ -114,30 +114,6 @@ const Profile = () => {
                     </CardContent>
                   </Card>
 
-                  {/* Quick Stats */}
-                  <Card className="mt-6">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Learning Stats</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Courses Completed</span>
-                        <span className="font-medium">0</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Learning Hours</span>
-                        <span className="font-medium">0</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Current Streak</span>
-                        <span className="font-medium">0 days</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Skills Learned</span>
-                        <span className="font-medium">0</span>
-                      </div>
-                    </CardContent>
-                  </Card>
                 </div>
 
                 {/* Main Content */}
