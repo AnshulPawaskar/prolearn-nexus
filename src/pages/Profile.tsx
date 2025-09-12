@@ -118,112 +118,198 @@ const Profile = () => {
 
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
-                  {/* Skills Progress */}
+                  {/* Profile Details */}
                   <Card>
-                    <CardHeader>
-                      <CardTitle>Profile Details</CardTitle>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                      <div>
+                        <CardTitle>Profile Details</CardTitle>
+                        <CardDescription>Your personal and professional information</CardDescription>
+                      </div>
+                      {!isEditing && (
+                        <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
+                          <Edit3 className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                      )}
                     </CardHeader>
                     
-                    <CardContent className="p-6">
-                      <div className="text-center">
-                        {isEditing ? (
-                          <div className="space-y-3">
-                            <Input
-                              name="first_name"
-                              value={editData.first_name || ''}
-                              onChange={handleEditChange}
-                              placeholder="First Name"
-                              className="text-center"
-                            />
-                            <Input
-                              name="last_name"
-                              value={editData.last_name || ''}
-                              onChange={handleEditChange}
-                              placeholder="Last Name"
-                              className="text-center"
-                            />
-                            <Input
-                              name="email"
-                              value={editData.email || ''}
-                              onChange={handleEditChange}
-                              placeholder="Email"
-                              className="text-center"
-                            />
-                            <Input
-                              name="age"
-                              type="number"
-                              value={editData.age || ''}
-                              onChange={handleEditChange}
-                              placeholder="Age"
-                              className="text-center"
-                            />
-                            <Input
-                              name="years_of_experience"
-                              type="number"
-                              value={editData.years_of_experience || ''}
-                              onChange={handleEditChange}
-                              placeholder="Years of Experience"
-                              className="text-center"
-                            />
-                            <Input
-                              name="qualification"
-                              value={editData.qualification || ''}
-                              onChange={handleEditChange}
-                              placeholder="Qualification"
-                              className="text-center"
-                            />
-                            <Input
-                              name="domain"
-                              value={editData.domain || ''}
-                              onChange={handleEditChange}
-                              placeholder="Domain"
-                              className="text-center"
-                            />
-                            <Input
-                              name="department"
-                              value={editData.department || ''}
-                              onChange={handleEditChange}
-                              placeholder="Department"
-                              className="text-center"
-                            />
-                            <Input
-                              name="position"
-                              value={editData.position || ''}
-                              onChange={handleEditChange}
-                              placeholder="Position"
-                              className="text-center"
-                            />
-                            {editError && (
-                              <div className="text-red-500 text-sm">{editError}</div>
-                            )}
-                            <div className="flex space-x-2">
-                              <Button size="sm" onClick={handleSaveProfile} disabled={loading}>
-                                {loading ? 'Saving...' : 'Save'}
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} disabled={loading}>
-                                Cancel
-                              </Button>
+                    <CardContent>
+                      {isEditing ? (
+                        <div className="space-y-6">
+                          {/* Personal Information */}
+                          <div>
+                            <h4 className="text-sm font-medium text-muted-foreground mb-3">Personal Information</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">First Name</label>
+                                <Input
+                                  name="first_name"
+                                  value={editData.first_name || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter first name"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">Last Name</label>
+                                <Input
+                                  name="last_name"
+                                  value={editData.last_name || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter last name"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">Email</label>
+                                <Input
+                                  name="email"
+                                  type="email"
+                                  value={editData.email || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter email address"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">Age</label>
+                                <Input
+                                  name="age"
+                                  type="number"
+                                  value={editData.age || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter age"
+                                />
+                              </div>
                             </div>
                           </div>
-                        ) : (
+
+                          {/* Professional Information */}
                           <div>
-                            <h2 className="text-xl font-bold mb-1">
-                              {profileData.first_name} {profileData.last_name}
-                            </h2>
-                            <p className="text-sm text-muted-foreground mb-1">{profileData.email}</p>
-                            <p className="text-sm mb-1">Age: {profileData.age}</p>
-                            <p className="text-sm mb-1">Years of Experience: {profileData.years_of_experience}</p>
-                            <p className="text-sm mb-1">Qualification: {profileData.qualification}</p>
-                            <p className="text-sm mb-1">Domain: {profileData.domain}</p>
-                            <p className="text-sm mb-1">Department: {profileData.department}</p>
-                            <p className="text-sm mb-4">Position: {profileData.position}</p>
-                            <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
-                              <Edit3 className="w-4 h-4 mr-2" />
-                              Edit Profile
+                            <h4 className="text-sm font-medium text-muted-foreground mb-3">Professional Information</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">Position</label>
+                                <Input
+                                  name="position"
+                                  value={editData.position || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter job position"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">Department</label>
+                                <Input
+                                  name="department"
+                                  value={editData.department || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter department"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">Domain</label>
+                                <Input
+                                  name="domain"
+                                  value={editData.domain || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter domain/field"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-sm font-medium">Years of Experience</label>
+                                <Input
+                                  name="years_of_experience"
+                                  type="number"
+                                  value={editData.years_of_experience || ''}
+                                  onChange={handleEditChange}
+                                  placeholder="Enter years of experience"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Education */}
+                          <div>
+                            <h4 className="text-sm font-medium text-muted-foreground mb-3">Education</h4>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Qualification</label>
+                              <Input
+                                name="qualification"
+                                value={editData.qualification || ''}
+                                onChange={handleEditChange}
+                                placeholder="Enter qualification"
+                              />
+                            </div>
+                          </div>
+
+                          {editError && (
+                            <div className="text-destructive text-sm bg-destructive/10 p-3 rounded-md">
+                              {editError}
+                            </div>
+                          )}
+
+                          <div className="flex justify-end space-x-2 pt-4 border-t">
+                            <Button variant="outline" onClick={() => setIsEditing(false)} disabled={loading}>
+                              Cancel
+                            </Button>
+                            <Button onClick={handleSaveProfile} disabled={loading}>
+                              {loading ? 'Saving...' : 'Save Changes'}
                             </Button>
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          {/* Personal Information */}
+                          <div>
+                            <h4 className="text-sm font-medium text-muted-foreground mb-3">Personal Information</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Full Name</p>
+                                <p className="font-medium">
+                                  {profileData.first_name} {profileData.last_name}
+                                </p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Email</p>
+                                <p className="font-medium">{profileData.email}</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Age</p>
+                                <p className="font-medium">{profileData.age} years</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Professional Information */}
+                          <div>
+                            <h4 className="text-sm font-medium text-muted-foreground mb-3">Professional Information</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Position</p>
+                                <p className="font-medium">{profileData.position}</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Department</p>
+                                <p className="font-medium">{profileData.department}</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Domain</p>
+                                <p className="font-medium">{profileData.domain}</p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Experience</p>
+                                <p className="font-medium">{profileData.years_of_experience} years</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Education */}
+                          <div>
+                            <h4 className="text-sm font-medium text-muted-foreground mb-3">Education</h4>
+                            <div className="space-y-1">
+                              <p className="text-sm text-muted-foreground">Qualification</p>
+                              <p className="font-medium">{profileData.qualification}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
