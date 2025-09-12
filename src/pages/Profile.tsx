@@ -1,0 +1,314 @@
+import Navigation from '@/components/layout/Navigation';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Edit3, Camera } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+const Profile = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [editData, setEditData] = useState<any>({});
+  const [loading, setLoading] = useState(false);
+  const [editError, setEditError] = useState('');
+
+  useEffect(() => {
+    const storedProfile = localStorage.getItem('profile');
+    if (storedProfile) {
+      setProfileData(JSON.parse(storedProfile));
+      setEditData(JSON.parse(storedProfile));
+    }
+  }, []);
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveProfile = async () => {
+    setLoading(true);
+    setEditError('');
+    try {
+      const token = localStorage.getItem('token');
+      // Prepare payload as per Register schema
+      const payload = {
+        jwt: token,
+        first_name: editData.first_name,
+        last_name: editData.last_name,
+        email: editData.email,
+        years_of_experience: Number(editData.years_of_experience),
+        age: Number(editData.age),
+        position: editData.position,
+        domain: editData.domain,
+        department: editData.department,
+        qualification: editData.qualification,
+        profile_image: ''
+      };
+
+      // Edit profile API
+      const res = await fetch('https://sbiu.shastrarth.in/user/edit_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed to update profile');
+
+      // Fetch updated profile
+      const profileRes = await fetch('https://sbiu.shastrarth.in/user/view_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt: token }),
+      });
+      if (!profileRes.ok) throw new Error('Failed to fetch updated profile');
+      const profile = await profileRes.json();
+
+      localStorage.setItem('profile', JSON.stringify(profile.Success));
+      setProfileData(profile.Success);
+      setIsEditing(false);
+    } catch (err: any) {
+      setEditError(err.message || 'Profile update failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!profileData) return <div>Loading...</div>;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="animate-fade-in">
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 max-w-md">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="mt-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Profile Card */}
+                <div className="lg:col-span-1">
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="text-center">
+                        <div className="relative inline-block mb-4">
+                          <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                            {(profileData.first_name?.[0] || '') + (profileData.last_name?.[0] || '')}
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="secondary"
+                            className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0"
+                          >
+                            <Camera className="w-4 h-4" />
+                          </Button>
+                        </div>
+                          <div>
+                            <h2 className="text-xl font-bold mb-1">{profileData.username}</h2>
+                            <p className="text-sm text-muted-foreground mb-3">{profileData.email}</p>
+                            <p className="text-sm mb-4">{profileData.position}, {profileData.department}</p>
+                          </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Quick Stats */}
+                  <Card className="mt-6">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Learning Stats</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Courses Completed</span>
+                        <span className="font-medium">0</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Learning Hours</span>
+                        <span className="font-medium">0</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Current Streak</span>
+                        <span className="font-medium">0 days</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Skills Learned</span>
+                        <span className="font-medium">0</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Skills Progress */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Profile Details</CardTitle>
+                    </CardHeader>
+                    
+                    <CardContent className="p-6">
+                      <div className="text-center">
+                        {isEditing ? (
+                          <div className="space-y-3">
+                            <Input
+                              name="first_name"
+                              value={editData.first_name || ''}
+                              onChange={handleEditChange}
+                              placeholder="First Name"
+                              className="text-center"
+                            />
+                            <Input
+                              name="last_name"
+                              value={editData.last_name || ''}
+                              onChange={handleEditChange}
+                              placeholder="Last Name"
+                              className="text-center"
+                            />
+                            <Input
+                              name="email"
+                              value={editData.email || ''}
+                              onChange={handleEditChange}
+                              placeholder="Email"
+                              className="text-center"
+                            />
+                            <Input
+                              name="age"
+                              type="number"
+                              value={editData.age || ''}
+                              onChange={handleEditChange}
+                              placeholder="Age"
+                              className="text-center"
+                            />
+                            <Input
+                              name="years_of_experience"
+                              type="number"
+                              value={editData.years_of_experience || ''}
+                              onChange={handleEditChange}
+                              placeholder="Years of Experience"
+                              className="text-center"
+                            />
+                            <Input
+                              name="qualification"
+                              value={editData.qualification || ''}
+                              onChange={handleEditChange}
+                              placeholder="Qualification"
+                              className="text-center"
+                            />
+                            <Input
+                              name="domain"
+                              value={editData.domain || ''}
+                              onChange={handleEditChange}
+                              placeholder="Domain"
+                              className="text-center"
+                            />
+                            <Input
+                              name="department"
+                              value={editData.department || ''}
+                              onChange={handleEditChange}
+                              placeholder="Department"
+                              className="text-center"
+                            />
+                            <Input
+                              name="position"
+                              value={editData.position || ''}
+                              onChange={handleEditChange}
+                              placeholder="Position"
+                              className="text-center"
+                            />
+                            {editError && (
+                              <div className="text-red-500 text-sm">{editError}</div>
+                            )}
+                            <div className="flex space-x-2">
+                              <Button size="sm" onClick={handleSaveProfile} disabled={loading}>
+                                {loading ? 'Saving...' : 'Save'}
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} disabled={loading}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <h2 className="text-xl font-bold mb-1">
+                              {profileData.first_name} {profileData.last_name}
+                            </h2>
+                            <p className="text-sm text-muted-foreground mb-1">{profileData.email}</p>
+                            <p className="text-sm mb-1">Age: {profileData.age}</p>
+                            <p className="text-sm mb-1">Years of Experience: {profileData.years_of_experience}</p>
+                            <p className="text-sm mb-1">Qualification: {profileData.qualification}</p>
+                            <p className="text-sm mb-1">Domain: {profileData.domain}</p>
+                            <p className="text-sm mb-1">Department: {profileData.department}</p>
+                            <p className="text-sm mb-4">Position: {profileData.position}</p>
+                            <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
+                              <Edit3 className="w-4 h-4 mr-2" />
+                              Edit Profile
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Recent Activity */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recent Activity</CardTitle>
+                      <CardDescription>Your latest learning milestones</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-2 h-2 bg-success rounded-full mt-2" />
+                          <div>
+                            <p className="text-sm font-medium">Completed "Advanced React Patterns"</p>
+                            <p className="text-xs text-muted-foreground">2 hours ago</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-2 h-2 bg-primary rounded-full mt-2" />
+                          <div>
+                            <p className="text-sm font-medium">Started "Data Visualization Module"</p>
+                            <p className="text-xs text-muted-foreground">1 day ago</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-2 h-2 bg-accent rounded-full mt-2" />
+                          <div>
+                            <p className="text-sm font-medium">Earned "Learning Streak" badge</p>
+                            <p className="text-xs text-muted-foreground">3 days ago</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="settings" className="mt-8">
+              <div className="space-y-6">
+                {/* Privacy Settings */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Privacy & Security</CardTitle>
+                    <CardDescription>Manage your privacy and security settings</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Button variant="outline" className="w-full justify-start">
+                      {/* <Shield className="w-4 h-4 mr-2" /> */}
+                      Change Password
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Profile;
