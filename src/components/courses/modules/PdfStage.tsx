@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
-import type { PdfContent } from './courseData';
+import type { PdfContent } from '../courseData';
 
 interface Props {
   content: PdfContent;

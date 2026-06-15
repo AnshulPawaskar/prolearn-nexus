@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { CheckCircle, XCircle, ChevronRight, RotateCcw } from 'lucide-react';
-import type { AssessmentQuestion } from './courseData';
+import type { AssessmentQuestion } from '../courseData';
 
 interface Props {
   questions: AssessmentQuestion[];

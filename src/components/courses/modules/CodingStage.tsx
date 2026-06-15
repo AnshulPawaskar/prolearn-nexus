@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Play, ChevronRight, Loader2 } from 'lucide-react';
-import type { CodingProblem } from './courseData';
+import type { CodingProblem } from '../courseData';
 
 interface Props {
   problem: CodingProblem;
