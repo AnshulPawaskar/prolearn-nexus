@@ -1,100 +1,58 @@
 import Navigation from '@/components/layout/Navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Play, 
-  Clock, 
-  Users, 
-  Star, 
+import {
+  Play,
   CheckCircle,
   Lock,
   PlayCircle,
+  FileText,
+  ClipboardCheck,
+  Code2,
   Download,
   MessageSquare,
   BookOpen,
-  Award
+  Award,
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getCourse } from '@/components/courses/courseData';
 
 const CourseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const courseId = id || '1';
+  const course = getCourse(courseId);
 
-  // Mock course data - in a real app, this would be fetched based on the ID
-  const course = {
-    id: id || '1',
-    title: 'Advanced React Development',
-    description: 'Master React hooks, context, and advanced patterns for building scalable applications. Learn from real-world projects and industry best practices.',
-    duration: '12 hours',
-    level: 'Advanced',
-    image: '',
-    progress: 75,
-    isEnrolled: true,
-    lastWatched: 'Custom Hooks Deep Dive',
-    completionRate: 89,
-    skills: ['React Hooks', 'Context API', 'Performance Optimization', 'Testing'],
-    requirements: ['Basic React knowledge', 'JavaScript ES6+', 'HTML/CSS fundamentals'],
-    whatYouWillLearn: [
-      'Advanced React patterns and best practices',
-      'Custom hooks development and optimization',
-      'State management with Context API',
-      'Performance optimization techniques',
-      'Testing React components effectively',
-      'Real-world project development'
-    ]
+  // Read per-module completion from local progress
+  let progress: Record<string, { completed: boolean }> = {};
+  try {
+    progress = JSON.parse(localStorage.getItem(`course-progress-${courseId}`) || '{}');
+  } catch {
+    /* noop */
+  }
+
+  const completedCount = course.modules.filter(m => progress[m.id]?.completed).length;
+  const totalModules = course.modules.length;
+  const pct = Math.round((completedCount / totalModules) * 100);
+
+  const firstIncomplete =
+    course.modules.find(m => !progress[m.id]?.completed) ?? course.modules[0];
+
+  const handleStart = (moduleId: string) => {
+    navigate(`/course/${courseId}/lesson/${moduleId}`);
   };
 
-  const curriculum = [
-    {
-      id: 1,
-      title: 'Introduction to Advanced React',
-      lessons: [
-        { id: 1, title: 'Course Overview', duration: '5:30', completed: true, locked: false },
-        { id: 2, title: 'Setting up the Environment', duration: '8:15', completed: true, locked: false },
-        { id: 3, title: 'Advanced Component Patterns', duration: '15:20', completed: true, locked: false }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Custom Hooks Mastery',
-      lessons: [
-        { id: 4, title: 'Understanding Custom Hooks', duration: '12:45', completed: true, locked: false },
-        { id: 5, title: 'Building Reusable Hooks', duration: '18:30', completed: true, locked: false },
-        { id: 6, title: 'Custom Hooks Deep Dive', duration: '22:15', completed: false, locked: false, current: true }
-      ]
-    },
-    {
-      id: 3,
-      title: 'Context API & State Management',
-      lessons: [
-        { id: 7, title: 'Context API Fundamentals', duration: '14:20', completed: false, locked: false },
-        { id: 8, title: 'Advanced Context Patterns', duration: '16:45', completed: false, locked: false },
-        { id: 9, title: 'State Management Best Practices', duration: '20:10', completed: false, locked: false }
-      ]
-    },
-    {
-      id: 4,
-      title: 'Performance Optimization',
-      lessons: [
-        { id: 10, title: 'React.memo and useMemo', duration: '13:25', completed: false, locked: true },
-        { id: 11, title: 'Code Splitting Strategies', duration: '17:30', completed: false, locked: true },
-        { id: 12, title: 'Performance Monitoring', duration: '11:15', completed: false, locked: true }
-      ]
-    }
-  ];
-
-
-  const totalLessons = curriculum.reduce((acc, section) => acc + section.lessons.length, 0);
-  const completedLessons = curriculum.reduce((acc, section) => 
-    acc + section.lessons.filter(lesson => lesson.completed).length, 0
-  );
-
-  const handleStartLesson = (lessonId: number) => {
-    navigate(`/course/${id}/lesson/${lessonId}`);
+  const meta = {
+    description:
+      'Structured modules combining instructional content, assessments, and hands-on coding challenges.',
+    level: 'Professional',
+    duration: `${totalModules} modules`,
   };
+
+
 
   return (
     <div className="min-h-screen bg-background">
