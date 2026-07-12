@@ -106,7 +106,7 @@ const CodingStage = ({ problem, onComplete }: Props) => {
               </Button>
             ))}
           </div>
-          <Badge variant="outline">Powered by Judge0</Badge>
+          <Badge variant="outline">Local demo runner</Badge>
         </div>
 
         <div className="border rounded-lg overflow-hidden">
