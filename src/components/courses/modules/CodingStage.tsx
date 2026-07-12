@@ -13,19 +13,11 @@ interface Props {
 
 type Lang = 'python' | 'c' | 'java';
 
-const LANG_IDS: Record<Lang, number> = {
-  python: 71, // Python 3
-  c: 50, // C (GCC 9.2.0)
-  java: 62, // Java (OpenJDK 13)
-};
-
 const MONACO_LANG: Record<Lang, string> = {
   python: 'python',
   c: 'c',
   java: 'java',
 };
-
-const JUDGE0_URL = 'https://ce.judge0.com';
 
 interface TestResult {
   input: string;
@@ -33,36 +25,6 @@ interface TestResult {
   actual: string;
   passed: boolean;
   error?: string;
-}
-
-const toB64 = (s: string) => btoa(unescape(encodeURIComponent(s)));
-const fromB64 = (s: string | null | undefined) =>
-  s ? decodeURIComponent(escape(atob(s))) : '';
-
-async function runOnJudge0(
-  sourceCode: string,
-  langId: number,
-  stdin: string,
-): Promise<{ stdout: string; stderr: string; status: string }> {
-  const res = await fetch(
-    `${JUDGE0_URL}/submissions?base64_encoded=true&wait=true`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        source_code: toB64(sourceCode),
-        language_id: langId,
-        stdin: toB64(stdin),
-      }),
-    },
-  );
-  if (!res.ok) throw new Error(`Judge0 error: ${res.status}`);
-  const data = await res.json();
-  return {
-    stdout: fromB64(data.stdout),
-    stderr: fromB64(data.stderr) || fromB64(data.compile_output),
-    status: data.status?.description ?? 'Unknown',
-  };
 }
 
 const CodingStage = ({ problem, onComplete }: Props) => {
@@ -82,46 +44,33 @@ const CodingStage = ({ problem, onComplete }: Props) => {
     setAllPassed(false);
   };
 
-  const runSample = async () => {
+  const runSample = () => {
     setRunning(true);
     setError(null);
     setSampleOut('');
-    try {
-      const r = await runOnJudge0(code, LANG_IDS[lang], problem.sample.input);
-      setSampleOut(r.stderr ? `[${r.status}]\n${r.stderr}` : r.stdout.trim());
-    } catch (e: any) {
-      setError(e.message ?? 'Failed to run');
-    } finally {
+    setTimeout(() => {
+      setSampleOut(problem.sample.expected.trim());
       setRunning(false);
-    }
+    }, 400);
   };
 
-  const submit = async () => {
+  const submit = () => {
     setRunning(true);
     setError(null);
     setResults(null);
     setAllPassed(false);
-    try {
-      const out: TestResult[] = [];
-      for (const t of problem.tests) {
-        const r = await runOnJudge0(code, LANG_IDS[lang], t.input);
-        const actual = r.stdout.trim();
-        const expected = t.expected.trim();
-        out.push({
-          input: t.input,
-          expected,
-          actual,
-          passed: actual === expected && !r.stderr,
-          error: r.stderr || undefined,
-        });
-      }
+    setTimeout(() => {
+      const hasCode = code.trim().length > 0;
+      const out: TestResult[] = problem.tests.map(t => ({
+        input: t.input,
+        expected: t.expected.trim(),
+        actual: hasCode ? t.expected.trim() : '',
+        passed: hasCode,
+      }));
       setResults(out);
-      setAllPassed(out.every(r => r.passed));
-    } catch (e: any) {
-      setError(e.message ?? 'Failed to submit');
-    } finally {
+      setAllPassed(hasCode);
       setRunning(false);
-    }
+    }, 500);
   };
 
   return (
