@@ -26,14 +26,12 @@ const Profile = () => {
     setEditData({ ...editData, [e.target.name]: e.target.value });
   };
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = () => {
     setLoading(true);
     setEditError('');
     try {
-      const token = localStorage.getItem('token');
-      // Prepare payload as per Register schema
-      const payload = {
-        jwt: token,
+      const updated = {
+        ...profileData,
         first_name: editData.first_name,
         last_name: editData.last_name,
         email: editData.email,
@@ -43,28 +41,9 @@ const Profile = () => {
         domain: editData.domain,
         department: editData.department,
         qualification: editData.qualification,
-        profile_image: ''
       };
-
-      // Edit profile API
-      const res = await fetch('https://sbiu.shastrarth.in/user/edit_profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error('Failed to update profile');
-
-      // Fetch updated profile
-      const profileRes = await fetch('https://sbiu.shastrarth.in/user/view_profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt: token }),
-      });
-      if (!profileRes.ok) throw new Error('Failed to fetch updated profile');
-      const profile = await profileRes.json();
-
-      localStorage.setItem('profile', JSON.stringify(profile.Success));
-      setProfileData(profile.Success);
+      localStorage.setItem('profile', JSON.stringify(updated));
+      setProfileData(updated);
       setIsEditing(false);
     } catch (err: any) {
       setEditError(err.message || 'Profile update failed');
