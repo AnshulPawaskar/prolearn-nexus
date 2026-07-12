@@ -14,36 +14,20 @@ const AuthPage = () => {
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    try {
-      const res = await fetch('https://sbiu.shastrarth.in/user/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: loginUsername,
-          password: loginPassword,
-        }),
-      });
-      if (!res.ok) throw new Error('Invalid credentials');
-      const loginData = await res.json();
-      const token = loginData.JWT;
-      const profileRes = await fetch('https://sbiu.shastrarth.in/user/view_profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwt: token }),
-      });
-      if (!profileRes.ok) throw new Error('Failed to fetch profile');
-      const profile = await profileRes.json();
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('profile', JSON.stringify(profile.Success));
+    if (loginUsername === 'user' && loginPassword === '1234') {
+      localStorage.setItem('token', 'demo-token');
+      localStorage.setItem(
+        'profile',
+        JSON.stringify({ first_name: 'Demo', last_name: 'User', username: 'user' })
+      );
       localStorage.setItem('isLoggedIn', 'true');
-
       navigate('/dashboard');
-    } catch (err: any) {
-      setLoginError(err.message || 'Login failed');
+    } else {
+      setLoginError('Invalid credentials');
     }
   };
 
